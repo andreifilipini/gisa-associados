@@ -50,13 +50,17 @@ public class AssociadoService {
 		if(historicoPlanoOpt.isPresent()) {
 			HistoricoPlano novoPlano = historicoPlanoOpt.get();
 			Associado associado = novoPlano.getAssociado();
-			HistoricoPlano planoAntigo = associado.getHistoricoPlano();
+			Optional<HistoricoPlano> planoAntigo = Optional.ofNullable(associado.getHistoricoPlano());
 
 			novoPlano.ativar(tipoAtendimento, tipoPlano);
-			planoAntigo.inativar();
+			if (planoAntigo.isPresent()) {
+				planoAntigo.get().inativar();
+			}
 			associado.setHistoricoPlano(novoPlano);
 
-			historicoPlanoRepository.save(planoAntigo);
+			if (planoAntigo.isPresent()) {
+				historicoPlanoRepository.save(planoAntigo.get());
+			}
 			historicoPlanoRepository.save(novoPlano);
 			associadoRepository.save(associado);
 		}
